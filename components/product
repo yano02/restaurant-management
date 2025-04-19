@@ -1,0 +1,16 @@
+// Add function to manage customers
+const { Reservation } = require('../models');
+const { ask } = require('./common');
+
+async function createProduct() {
+    console.log('\n Create product');
+}
+
+async function listProducts() {
+    console.log('\n List products');
+}
+
+module.exports = {
+    createProduct,
+    listProducts
+};
