@@ -28,10 +28,20 @@ async function manageCustomers() {
 }
 
 async function createCustomer() {
+   const customers = await customer.create({
+    firstname: 'sam',
+    lastname: 'Edorh',
+    email: 'edorhsam@gmail.com',
+    phonenumber: '1234567890',})
     console.log('\n Create customer');
 }
 
 async function listCustomers() {
+    const customers = await Customer.findAll();
+    console.log('\n--- Customers ---');
+    customers.forEach(customer => {
+        console.log(`- ${customer.firstname} ${customer.lastname} (${customer.email} ${customer.phonenumber})`);
+    });
   console.log('\n📋 Customers list:');
 }
 
