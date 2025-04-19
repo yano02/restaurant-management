@@ -1,16 +1,66 @@
-// Add function to manage customers
-const { Reservation } = require('../models');
+// Add function to manage products
+const { Product } = require('../models');
 const { ask } = require('./common');
 
+async function manageProducts() {
+    console.log('\n--- Manage Products ---');
+    console.log('1. Create a product');
+    console.log('2. List products');
+    console.log('3. Back to main menu');
+
+    const choice = await ask('Your choice: ');
+
+    switch (choice) {
+        case '1':
+            await createProduct();
+            break;
+        case '2':
+            await listProducts();
+            break;
+        case '3':
+            return;
+        default:
+            console.log('❌ Invalid option.');
+    }
+
+    await manageProducts(); // Repeat submenu
+}
+
 async function createProduct() {
-    console.log('\n Create product');
+    console.log('\n🆕 Create Product');
+
+    const name = await ask('Product name: ');
+    const price = await ask('Product price: ');
+
+    try {
+        const product = await Product.create({
+            name,
+            price: parseFloat(price)
+        });
+
+        console.log(`✅ Product "${product.name}" created successfully.`);
+    } catch (err) {
+        console.error('❌ Error creating product:', err.message);
+    }
 }
 
 async function listProducts() {
-    console.log('\n List products');
+    console.log('\n📋 Products list:');
+
+    const products = await Product.findAll();
+
+    if (products.length === 0) {
+        console.log('📭 No products found.');
+        return;
+    }
+
+    products.forEach(p => {
+        console.log(`- ID: ${p.id} | ${p.name} | ${p.price} FCFA`);
+    });
 }
 
 module.exports = {
+    manageProducts,
     createProduct,
     listProducts
 };
