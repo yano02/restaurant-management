@@ -1,4 +1,4 @@
-// Add function to manage customers
+// Add function to manage customers by samson
 const { Customer } = require('../models');
 const { ask } = require('./common');
 
@@ -28,21 +28,61 @@ async function manageCustomers() {
 }
 
 async function createCustomer() {
-   const customers = await customer.create({
-    firstname: 'sam',
-    lastname: 'Edorh',
-    email: 'edorhsam@gmail.com',
-    phonenumber: '1234567890',})
-    console.log('\n Create customer');
+  console.log('\n Create customer');
+  let firstname;
+  do {
+      firstname = await ask('First name (required): ');
+      if (!firstname) console.log('❌ First name cannot be empty.');
+  } while (!firstname);
+
+  let lastname;
+  do {
+      lastname = await ask('Last name (required): ');
+      if (!lastname) console.log('❌ Last name cannot be empty.');
+  } while (!lastname);
+
+  let email;
+  do {
+      email = await ask('Email (required): ');
+      if (!email.includes('@')) console.log('❌ Invalid email format.');
+  } while (!email.includes('@'));
+
+  let phonenumber;
+  do {
+      phonenumber = await ask('Phone number (required): ');
+      if (!phonenumber) console.log('❌ Phone number is required.');
+  } while (!phonenumber);
+
+  try {
+      const customer = await Customer.create({
+          firstname,
+          lastname,
+          email,
+          phonenumber
+      });
+
+      console.log('\n✅ Customer created successfully:');
+      console.log(customer.toJSON());
+  } catch (error) {
+      console.error('❌ Error creating customer:', error);
+  }
 }
 
+
 async function listCustomers() {
-    const customers = await Customer.findAll();
-    console.log('\n--- Customers ---');
-    customers.forEach(customer => {
-        console.log(`- ${customer.firstname} ${customer.lastname} (${customer.email} ${customer.phonenumber})`);
-    });
-  console.log('\n📋 Customers list:');
+    console.log('\n📋 Customers list:');
+    try {
+        const customers = await Customer.findAll();
+        if (customers.length === 0) {
+            console.log('❌ No customers found.');
+            return;
+        }
+        customers.forEach((customer) => {
+            console.log(`- ${customer.firstname} ${customer.lastname} (${customer.email}) - ${customer.phonenumber || 'N/A'}`);
+        });
+    } catch (error) {
+        console.error('❌ Error listing customers:', error);
+    }
 }
 
 module.exports = {
