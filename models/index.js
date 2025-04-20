@@ -79,6 +79,6 @@ module.exports = {
   Product,
   Menu,
   Reservation,
-  MenuProduct,
-  MenuCooked
+  MenusProduct,
+  MenusCooked
 };
