@@ -34,7 +34,13 @@ async function createReservation() {
     const menuId = await ask('Menu ID (optional): ');
     const date = await ask('Date (YYYY-MM-DD): ');
 
-    // Vérifie s’il a déjà une réservation ce jour-là
+    const customer = await Customer.findByPk(customerId);
+    const table = await Table.findByPk(tableId);
+    if (!customer || !table) {
+        console.log('❌ Invalid customer or table.');
+        return;
+    }
+
     const existing = await Reservation.findOne({
         where: {
             customerId,
@@ -76,7 +82,8 @@ async function listReservations() {
 
     console.log(`\n📋 Reservations for ${date}:`);
     for (const r of reservations) {
-        console.log(`- ID: ${r.id} | ${r.customer.name} reserved ${r.table.name}${r.menu ? ' with menu ' + r.menu.name : ''}`);
+        const customerName = `${r.customer.firstname} ${r.customer.lastname}`;
+        console.log(`- ID: ${r.id} | ${customerName} reserved table ${r.table.name}${r.menu ? ' with menu ' + r.menu.name : ''}`);
     }
 }
 
@@ -94,7 +101,7 @@ async function viewReservation() {
 
     console.log(`\n📄 Reservation Details:
 - ID: ${r.id}
-- Customer: ${r.customer.name}
+- Customer: ${r.customer.firstname} ${r.customer.lastname}
 - Table: ${r.table.name}
 - Menu: ${r.menu ? r.menu.name : 'None'}
 - Date: ${r.date}`);
@@ -113,7 +120,6 @@ async function updateReservation() {
     const newMenuId = await ask(`New Menu ID (current: ${reservation.menuId || 'none'}): `);
     const newDate = await ask(`New Date (YYYY-MM-DD, current: ${reservation.date}): `);
 
-    // Validation: éviter doublon
     const existing = await Reservation.findOne({
         where: {
             id: { [Op.ne]: id },
